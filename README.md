@@ -162,13 +162,13 @@ fun Toaster(
     contentColor: @Composable (toast: Toast) -> Color,
     border: @Composable (toast: Toast) -> BorderStroke,
     background: @Composable (toast: Toast) -> Brush,
+    shape: @Composable (toast: Toast) -> Shape,
     elevation: Dp,
     shadowAmbientColor: Color,
     shadowSpotColor: Color,
-    shape: Shape,
     contentPadding: PaddingValues,
-    containerPadding: PaddingValues,
-    maxWidth: Dp,
+    containerPadding: @Composable (toast: Toast) -> PaddingValues,
+    widthPolicy: @Composable (toast: Toast) -> ToastWidthPolicy,
     offset: IntOffet,
 )
 ```
