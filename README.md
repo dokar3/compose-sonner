@@ -7,6 +7,12 @@
 
 This is a Compose implementation of [sonner](https://github.com/emilkowalski/sonner) - an excellent toast library by [emilkowalski](https://github.com/emilkowalski).
 
+### Demo
+
+
+https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40-0d2ba382c757
+
+
 ### Features
 
 - Almost the same as the emilkowalski's React implementation: UI, Animations, and even the API.
