@@ -78,12 +78,12 @@ internal fun LazyToasterBox(
             maxWidth = constraints.maxWidth - startPadding - endPadding,
         )
 
-        val visibleItemsRange = state.visibleItemsRange()
-        if (visibleItemsRange.isEmpty()) {
+        val visibleItemIndices = state.visibleItemIndices()
+        if (visibleItemIndices.isEmpty()) {
             return@LazyLayout layout(startPadding + endPadding, topPadding + bottomPadding) {}
         }
 
-        val placeables = visibleItemsRange.flatMap {
+        val placeables = visibleItemIndices.flatMap {
             if (!state.isItemDismissed(it)) {
                 measure(it, updatedConstrains)
             } else {
@@ -176,10 +176,17 @@ internal class LazyToasterBoxState(
 
     fun itemCount() = itemCountProvider()
 
-    fun visibleItemsRange(): IntRange {
-        val end = itemCountProvider() - 1
-        val start = max(end - maxVisibleToasts, 0)
-        return start..end
+    fun visibleItemIndices(): List<Int> {
+        val maxCount = maxVisibleToasts + 1
+        val visibleIndices = mutableListOf<Int>()
+        val lastIndex = itemCount() - 1
+        for (i in lastIndex downTo 0){
+            if (visibleIndices.size == maxCount) break
+            if (!isItemDismissed(i)) {
+                visibleIndices.add(i)
+            }
+        }
+        return visibleIndices.reversed()
     }
 
     fun keyForIndex(index: Int) = key(index)

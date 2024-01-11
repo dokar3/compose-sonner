@@ -158,9 +158,9 @@ fun Toaster(
         LaunchedEffect(state.toasts) {
             state.dismissingToastsFlow()
                 .collect { item ->
-                    val visibleItemsRange = lazyToasterBoxState.visibleItemsRange()
+                    val visibleItemIndices = lazyToasterBoxState.visibleItemIndices()
                     val index = state.toasts.indexOf(item)
-                    if (index !in visibleItemsRange) {
+                    if (index !in visibleItemIndices) {
                         // Item dismissed but not currently visible, mark it as
                         // dismissed state and don't render it on UI
                         state.markDismissed(item.toast.id)
