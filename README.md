@@ -17,7 +17,7 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
 
 ### Features
 
-- Almost the same as the emilkowalski's React implementation: UI, Animations, and even the API.
+- Almost the same as emilkowalski's React implementation: UI, Animations, and even the API.
   These include:
     - Stacked toasts and expanded toasts
     - Different types and rich colors
