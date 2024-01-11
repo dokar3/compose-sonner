@@ -11,7 +11,7 @@ This is a Compose implementation of [sonner](https://github.com/emilkowalski/son
 
 ### Demo
 
-GitHub Pages Demo
+WasmJs Demo (Not mobile-friendly yet)
 
 [https://dokar3.github.io/compose-sonner/](https://dokar3.github.io/compose-sonner/)
 
@@ -39,7 +39,7 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
 ### Roadmaps
 
 - [ ] iOS target. Waiting for contributors because I don't have any Apple devices to run
-- [ ] Online wasmJs sample
+- [x] Online wasmJs sample
 
 # Usages
 
