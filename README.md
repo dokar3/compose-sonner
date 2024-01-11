@@ -11,6 +11,11 @@ This is a Compose implementation of [sonner](https://github.com/emilkowalski/son
 
 ### Demo
 
+GitHub Pages Demo
+
+[https://dokar3.github.io/compose-sonner/](https://dokar3.github.io/compose-sonner/)
+
+Video
 
 https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40-0d2ba382c757
 
