@@ -178,7 +178,7 @@ fun Toaster(
 )
 ```
 
-### Interactive with ViewModel UiState
+### Interact with ViewModel UiState
 
 Define the mapping function
 
