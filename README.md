@@ -1,6 +1,8 @@
 <div align="center">
   <img src="./images/banner.png"  alt="Compose Sonner"/>
   <h1>Compose Sonner</h1>
+  <img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.dokar3/sonner?style=flat-square&color=%23335AE7">
+  <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/dokar3/compose-sonner/build.yaml?style=flat-square">
 </div>
 
 > An opinionated toast component for Compose Multiplatform.
@@ -35,6 +37,20 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
 - [ ] Online wasmJs sample
 
 # Usages
+
+### Dependency
+
+build.gradle(.kts)
+
+```kotlin
+implementation("io.github.dokar3:sonner:<VERSION>")
+```
+
+libs.versions.toml
+
+```toml
+sonner = { module = "io.github.dokar3:sonner", version = "<VERSION>" }
+```
 
 ### Basic
 
