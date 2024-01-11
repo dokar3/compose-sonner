@@ -11,7 +11,7 @@ This is a Compose implementation of [sonner](https://github.com/emilkowalski/son
 
 ### Demo
 
-WasmJs Demo (Not mobile-friendly yet)
+WasmJs Demo
 
 [https://dokar3.github.io/compose-sonner/](https://dokar3.github.io/compose-sonner/)
 
