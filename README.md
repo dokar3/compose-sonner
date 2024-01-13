@@ -38,7 +38,7 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
 
 ### Roadmaps
 
-- [ ] iOS target. Waiting for contributors because I don't have any Apple devices to run
+- [x] iOS target. Done in [#8](https://github.com/dokar3/compose-sonner/pull/8), thanks to [@shubhamsinghshubham777](https://github.com/shubhamsinghshubham777)!
 - [x] Online wasmJs sample
 
 # Usages
