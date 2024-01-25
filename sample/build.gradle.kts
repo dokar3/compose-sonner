@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
+import com.android.build.gradle.internal.lint.LintModelWriterTask
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -112,4 +114,12 @@ compose.desktop {
 
 compose.experimental {
     web.application {}
+}
+
+// https://github.com/JetBrains/compose-multiplatform/issues/4085
+tasks.withType<AndroidLintAnalysisTask>{
+    dependsOn("copyFontsToAndroidAssets")
+}
+tasks.withType<LintModelWriterTask>{
+    dependsOn("copyFontsToAndroidAssets")
 }
