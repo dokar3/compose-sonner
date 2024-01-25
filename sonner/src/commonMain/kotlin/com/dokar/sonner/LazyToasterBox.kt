@@ -65,7 +65,7 @@ internal fun LazyToasterBox(
     }
 
     LazyLayout(
-        itemProvider = itemProvider,
+        itemProvider = { itemProvider },
         modifier = modifier,
     ) { constraints ->
         val topPadding = contentPadding.calculateTopPadding().roundToPx()
@@ -180,7 +180,7 @@ internal class LazyToasterBoxState(
         val maxCount = maxVisibleToasts + 1
         val visibleIndices = mutableListOf<Int>()
         val lastIndex = itemCount() - 1
-        for (i in lastIndex downTo 0){
+        for (i in lastIndex downTo 0) {
             if (visibleIndices.size == maxCount) break
             if (!isItemDismissed(i)) {
                 visibleIndices.add(i)
