@@ -18,7 +18,7 @@ jobs:
           distribution: 'zulu'
           java-version: 20
 
-      - uses: gradle/gradle-build-action@v2.12.0
+      - uses: gradle/gradle-build-action@v3.0.0
 
       - name: Deploy to Sonatype
         run: ./gradlew publish --no-configuration-cache
