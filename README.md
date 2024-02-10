@@ -43,7 +43,7 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
 
 # Usages
 
-### Dependency
+### Installation
 
 build.gradle(.kts)
 
@@ -66,7 +66,7 @@ Button(onClick = { toaster.show("Hello world!") }) {
     Text("Show a toast")
 }
 
-Toaster(state = state)
+Toaster(state = toaster)
 ```
 
 ### Types
