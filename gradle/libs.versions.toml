@@ -16,7 +16,7 @@ compose-plugin = "1.6.0-beta02"
 junit = "4.13.2"
 kotlin = "1.9.22"
 kotlin2 = "1.9.22"
-coroutines = "1.8.0-RC2"
+coroutines = "1.8.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
