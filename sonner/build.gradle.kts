@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
@@ -86,3 +87,11 @@ android {
 compose.experimental {
     web.application {}
 }
+
+tasks
+    .withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
+    .configureEach {
+        compilerOptions
+            .jvmTarget
+            .set(JvmTarget.JVM_11)
+    }
