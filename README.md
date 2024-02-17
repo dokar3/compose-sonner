@@ -19,7 +19,6 @@ Video
 
 https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40-0d2ba382c757
 
-
 ### Features
 
 - Almost the same as emilkowalski's React implementation: UI, Animations, and even the API.
@@ -152,10 +151,19 @@ Toaster(
         if (toast.icon == ICON_LAODING) {
             LoadingIcon()
         } else {
-          // Fallback to the default icon slot
+            // Fallback to the default icon slot
             ToasterDefaults.iconSlot(toast)
         }
     },
+)
+```
+
+### Dismiss pause
+
+```kotlin
+Toaster(
+    state = toaster,
+    dismissPause = ToastDismissPause.[Never | OnNotFront | OnInvisible],
 )
 ```
 
@@ -233,9 +241,9 @@ fun UiMessageToaster(
 @Composable
 fun YourScreen(...) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     ...
-    
+
     UiMessageToaster(
         messages = uiState.uiMessages,
         onRemoveMessage = { viewModel.removeUiMessageById(it) },

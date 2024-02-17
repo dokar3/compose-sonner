@@ -29,7 +29,11 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster)
+                Toaster(
+                    state = toaster,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -45,7 +49,11 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster, enterTransitionDuration = 0)
+                Toaster(
+                    state = toaster,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -62,7 +70,12 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster, maxVisibleToasts = 2)
+                Toaster(
+                    state = toaster,
+                    maxVisibleToasts = 2,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -82,7 +95,12 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster, maxVisibleToasts = 2)
+                Toaster(
+                    state = toaster,
+                    maxVisibleToasts = 2,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -95,7 +113,11 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster, showCloseButton = true)
+                Toaster(
+                    state = toaster, showCloseButton = true,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -110,7 +132,11 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster)
+                Toaster(
+                    state = toaster,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 
@@ -131,7 +157,11 @@ class ToasterTest {
         val toaster = ToasterState(coroutineScope = this)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(500.dp)) {
-                Toaster(state = toaster)
+                Toaster(
+                    state = toaster,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
             }
         }
 

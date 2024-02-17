@@ -28,12 +28,13 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.dokar.sonner.TextToastAction
 import com.dokar.sonner.Toast
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
+import com.dokar.sonner.currentNanoTime
 import com.dokar.sonner.listenMany
 import com.dokar.sonner.rememberToasterState
-import com.dokar.sonner.currentNanoTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,7 +109,9 @@ private fun UiMessageToaster(
 
     LaunchedEffect(toaster) {
         // Listen to State<List<UiMessage>> changes and map to toasts
-        toaster.listenMany { currentMessages.map(UiMessage::toToast) }
+        toaster.listenMany { currentMessages.map { message->
+            message.toToast(onDismiss = {onRemoveMessage(message.id)})
+        } }
     }
 
     Toaster(
@@ -119,15 +122,21 @@ private fun UiMessageToaster(
     )
 }
 
-private fun UiMessage.toToast(): Toast = when (this) {
+private fun UiMessage.toToast(onDismiss: (toast: Toast)->Unit): Toast = when (this) {
     is UiMessage.Error -> Toast(
         id = id,
         message = message,
         type = ToastType.Error,
         duration = Duration.INFINITE,
+        action = TextToastAction(text = "Dismiss", onClick = onDismiss),
     )
 
-    is UiMessage.Success -> Toast(id = id, message = message, type = ToastType.Success)
+    is UiMessage.Success -> Toast(
+        id = id,
+        message = message,
+        type = ToastType.Success,
+        action = TextToastAction(text = "Dismiss", onClick = onDismiss),
+    )
 }
 
 internal sealed interface UiMessage {
@@ -153,6 +162,7 @@ internal data class UiState(
 internal class ViewModel(
     private val viewModelScope: CoroutineScope,
 ) {
+    private var id = 0
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
@@ -161,7 +171,8 @@ internal class ViewModel(
         delay(1000)
         _uiState.update {
             val messages = it.uiMessages.toMutableList()
-            messages.add(UiMessage.Success("Loaded"))
+            messages.add(UiMessage.Success("Loaded ${id++}"))
+
             it.copy(isLoading = false, uiMessages = messages)
         }
     }

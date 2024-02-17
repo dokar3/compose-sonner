@@ -50,7 +50,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.Popup
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlin.math.max
 
 /**
@@ -122,6 +124,7 @@ fun Toaster(
     offset: IntOffset = IntOffset.Zero,
     enterTransitionDuration: Int = ToasterDefaults.ENTER_TRANSITION_DURATION,
     exitTransitionDuration: Int = ToasterDefaults.EXIT_TRANSITION_DURATION,
+    dismissPause: ToastDismissPause = ToastDismissPause.OnInvisible,
     iconSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.iconSlot(it) },
     messageSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.messageSlot(it) },
     actionSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.actionSlot(it) },
@@ -168,6 +171,13 @@ fun Toaster(
                 }
         }
 
+        ApplyToastDismissPause(
+            state = state,
+            toastDismissPause = dismissPause,
+            lazyToasterBoxState = lazyToasterBoxState,
+            maxVisibleToasts = maxVisibleToasts,
+        )
+
         LazyToasterBox(
             state = lazyToasterBoxState,
             expanded = expanded,
@@ -180,19 +190,19 @@ fun Toaster(
             val item = state.toasts[index]
             val toast = item.toast
 
-            var nonVisibleItems by remember { mutableIntStateOf(0) }
+            var invisibleItemCount by remember { mutableIntStateOf(0) }
 
             LaunchedEffect(state.toasts.lastIndex, index) {
                 // This finds all dismissing or dismissed item count above this current item,
                 // will make our toasts animated after some have dismissed.
-                state.nonVisibleItemsInRangeFlow(
+                state.invisibleItemsInRangeFlow(
                     start = index + 1,
                     end = state.toasts.lastIndex
                 )
-                    .collect { nonVisibleItems = it }
+                    .collect { invisibleItemCount = it }
             }
 
-            val layoutIndex = state.toasts.lastIndex - index - nonVisibleItems
+            val layoutIndex = state.toasts.lastIndex - index - invisibleItemCount
 
             val currentBorder = border(toast)
             val currentBackground = background(toast)
@@ -235,6 +245,66 @@ fun Toaster(
                 }
             }
         }
+    }
+}
+
+@Composable
+private inline fun ApplyToastDismissPause(
+    state: ToasterState,
+    toastDismissPause: ToastDismissPause,
+    lazyToasterBoxState: LazyToasterBoxState,
+    maxVisibleToasts: Int,
+) {
+    LaunchedEffect(state, lazyToasterBoxState, toastDismissPause) {
+        snapshotFlow { state.toasts.map { arrayOf(it.toast, it.state) } }
+            .map { lazyToasterBoxState.visibleItemIndices() }
+            .distinctUntilChanged()
+            .collect { visibleIndices ->
+                val toasts = state.toasts
+                if (toasts.isEmpty() || visibleIndices.isEmpty()) return@collect
+                when (toastDismissPause) {
+                    ToastDismissPause.Never -> {
+                        for (toast in toasts) {
+                            state.resumeDismissTimer(toast.toast.id)
+                        }
+                    }
+
+                    ToastDismissPause.OnNotFront -> {
+                        // Resume the dismiss timer for the front toast
+                        val frontToastIndex = visibleIndices.last()
+                        state.resumeDismissTimer(toasts[frontToastIndex].toast.id)
+                        // Pause others
+                        for (i in toasts.indices) {
+                            if (i != frontToastIndex) {
+                                state.pauseDismissTimer(toasts[i].toast.id)
+                            }
+                        }
+                    }
+
+                    ToastDismissPause.OnInvisible -> {
+                        val realVisibleIndices = if (visibleIndices.size > maxVisibleToasts) {
+                            // Exclude items that are marked as visible but are not,
+                            // for the animation reason
+                            val from = visibleIndices.size - maxVisibleToasts
+                            val to = visibleIndices.size
+                            visibleIndices.subList(from, to)
+                        } else {
+                            visibleIndices
+                        }
+                        // Resume dismiss timer for visible toasts
+                        for (index in realVisibleIndices) {
+                            state.resumeDismissTimer(toasts[index].toast.id)
+                        }
+                        // Pause others
+                        val visibleIndexSet = realVisibleIndices.toSet()
+                        for (i in toasts.indices) {
+                            if (!visibleIndexSet.contains(i)) {
+                                state.pauseDismissTimer(toasts[i].toast.id)
+                            }
+                        }
+                    }
+                }
+            }
     }
 }
 

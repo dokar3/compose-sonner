@@ -151,18 +151,18 @@ class ToasterState(
             } else {
                 _toasts[lastIndex] = updated
             }
-            startToastJob(toast = toast)
+            startToastJob(toast = toast, displayedTime = updated.displayedTime)
         } else {
             _toasts.add(StatefulToast(toast))
-            startToastJob(toast)
+            startToastJob(toast = toast, displayedTime = Duration.ZERO)
         }
     }
 
-    private fun startToastJob(toast: Toast) {
+    private fun startToastJob(toast: Toast, displayedTime: Duration) {
         val id = toast.id
         jobs[id]?.cancel()
+        var delayed = displayedTime
         jobs[id] = coroutineScope.launch {
-            var delayed = Duration.ZERO
             var delayDuration = toast.duration
             while (isActive) {
                 delay(delayDuration)
@@ -179,6 +179,7 @@ class ToasterState(
             updateToast(id) { it.copy(state = VisibleState.Dismissing) }
         }.also { job ->
             job.invokeOnCompletion {
+                updateToast(id) { it.copy(displayedTime = delayed) }
                 // Make sure to remove the job from the map
                 if (jobs[id] == job) {
                     jobs.remove(id)
@@ -200,7 +201,19 @@ class ToasterState(
         }
     }
 
-    internal fun nonVisibleItemsInRangeFlow(start: Int, end: Int): Flow<Int> {
+    internal fun pauseDismissTimer(id: Any) {
+        val job = jobs[id] ?: return
+        job.cancel()
+    }
+
+    internal fun resumeDismissTimer(id: Any) {
+        if (jobs[id]?.isActive == true) return
+        val statefulToast = toasts.firstOrNull { it.toast.id == id } ?: return
+        if (statefulToast.displayedTime >= statefulToast.toast.duration) return
+        startToastJob(statefulToast.toast, displayedTime = statefulToast.displayedTime)
+    }
+
+    internal fun invisibleItemsInRangeFlow(start: Int, end: Int): Flow<Int> {
         fun isOutOfBounds(list: List<*>, start: Int, end: Int): Boolean {
             val indices = list.indices
             return start !in indices || end !in indices
@@ -249,6 +262,7 @@ class ToasterState(
 internal data class StatefulToast(
     val toast: Toast,
     val state: VisibleState = VisibleState.Visible,
+    val displayedTime: Duration = Duration.ZERO,
 ) {
     val isVisible get() = state == VisibleState.Visible
     val isDismissing get() = state == VisibleState.Dismissing
