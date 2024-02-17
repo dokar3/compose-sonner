@@ -143,14 +143,7 @@ class ToasterState(
         val index = toasts.indexOfFirst { it.toast.id == toast.id }
         if (index != -1) {
             val updated = toasts[index].copy(toast = toast, state = VisibleState.Visible)
-            val lastIndex = toasts.lastIndex
-            if (index != lastIndex) {
-                // Move the toast to the front
-                _toasts.removeAt(index)
-                _toasts.add(updated)
-            } else {
-                _toasts[lastIndex] = updated
-            }
+            _toasts[index] = updated
             startToastJob(toast = toast, displayedTime = updated.displayedTime)
         } else {
             _toasts.add(StatefulToast(toast))

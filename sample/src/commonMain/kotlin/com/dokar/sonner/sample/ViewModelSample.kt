@@ -109,9 +109,11 @@ private fun UiMessageToaster(
 
     LaunchedEffect(toaster) {
         // Listen to State<List<UiMessage>> changes and map to toasts
-        toaster.listenMany { currentMessages.map { message->
-            message.toToast(onDismiss = {onRemoveMessage(message.id)})
-        } }
+        toaster.listenMany {
+            currentMessages.map { message ->
+                message.toToast(onDismiss = { onRemoveMessage(message.id) })
+            }
+        }
     }
 
     Toaster(
@@ -122,7 +124,7 @@ private fun UiMessageToaster(
     )
 }
 
-private fun UiMessage.toToast(onDismiss: (toast: Toast)->Unit): Toast = when (this) {
+private fun UiMessage.toToast(onDismiss: (toast: Toast) -> Unit): Toast = when (this) {
     is UiMessage.Error -> Toast(
         id = id,
         message = message,

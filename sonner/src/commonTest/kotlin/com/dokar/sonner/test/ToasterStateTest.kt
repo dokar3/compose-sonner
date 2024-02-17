@@ -58,15 +58,6 @@ class ToasterStateTest {
     }
 
     @Test
-    fun toastOrderAfterUpdating() = testToasterState { toaster ->
-        val toast = toaster.show("Message")
-        toaster.show("Another toast")
-        // Update
-        toaster.show(message = "Updated message", id = toast.id)
-        assertEquals(toast.id, toaster.toasts.last().toast.id)
-    }
-
-    @Test
     fun updateDuration() = testToasterState { toaster ->
         val toast = toaster.show(message = "", duration = 1000.milliseconds)
         delay(800)
