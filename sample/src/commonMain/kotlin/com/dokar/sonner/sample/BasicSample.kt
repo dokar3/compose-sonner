@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dokar.sonner.TextToastAction
+import com.dokar.sonner.ToastDismissPause
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
@@ -55,6 +57,8 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
     var closeButton by remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
+
+    var dismissPause by remember { mutableStateOf(ToastDismissPause.Never) }
 
     var alignment by remember { mutableStateOf(Alignment.BottomCenter) }
 
@@ -209,6 +213,59 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Dismiss (timer) pause")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { dismissPause = ToastDismissPause.Never }
+                    ),
+                ) {
+                    RadioButton(
+                        selected = dismissPause == ToastDismissPause.Never,
+                        onClick = { dismissPause = ToastDismissPause.Never }
+                    )
+                    Text("Never")
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { dismissPause = ToastDismissPause.OnNotFront }
+                    ),
+                ) {
+                    RadioButton(
+                        selected = dismissPause == ToastDismissPause.OnNotFront,
+                        onClick = { dismissPause = ToastDismissPause.OnNotFront }
+                    )
+                    Text("OnNotFront")
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { dismissPause = ToastDismissPause.OnInvisible }
+                    ),
+                ) {
+                    RadioButton(
+                        selected = dismissPause == ToastDismissPause.OnInvisible,
+                        onClick = { dismissPause = ToastDismissPause.OnInvisible }
+                    )
+                    Text("OnInvisible")
+                }
+            }
+
             Spacer(Modifier.height(16.dp))
 
             Text("Position")
@@ -286,5 +343,6 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
         darkTheme = darkTheme,
         showCloseButton = closeButton,
         alignment = alignment,
+        dismissPause = dismissPause,
     )
 }
