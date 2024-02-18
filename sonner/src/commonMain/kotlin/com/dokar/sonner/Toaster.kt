@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.Popup
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlin.math.max
@@ -258,7 +257,6 @@ private inline fun ApplyToastDismissPause(
     LaunchedEffect(state, lazyToasterBoxState, toastDismissPause) {
         snapshotFlow { state.toasts.map { arrayOf(it.toast, it.state) } }
             .map { lazyToasterBoxState.visibleItemIndices() }
-            .distinctUntilChanged()
             .collect { visibleIndices ->
                 val toasts = state.toasts
                 if (toasts.isEmpty() || visibleIndices.isEmpty()) return@collect
