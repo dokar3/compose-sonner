@@ -43,4 +43,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
