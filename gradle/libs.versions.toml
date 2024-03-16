@@ -14,7 +14,7 @@ compose = "1.6.3"
 compose-compiler = "1.5.6"
 compose-plugin = "1.6.1"
 junit = "4.13.2"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 kotlin2 = "1.9.22"
 coroutines = "1.8.0"
 
