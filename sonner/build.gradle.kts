@@ -25,6 +25,20 @@ kotlin {
         }
         binaries.executable()
     }
+    js(IR) {
+        moduleName = "compose-sooner"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "compose-sooner.js"
+            }
+
+            testTask {
+                // Tests are broken now: Module not found: Error: Can't resolve './skiko.mjs'
+                enabled = false
+            }
+        }
+        binaries.executable()
+    }
 
     androidTarget {
         publishLibraryVariants("release")

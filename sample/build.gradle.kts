@@ -20,6 +20,16 @@ kotlin {
         }
         binaries.executable()
     }
+
+    js(IR) {
+        moduleName = "composeApp"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
+        }
+        binaries.executable()
+    }
     
     androidTarget {
         compilations.all {
