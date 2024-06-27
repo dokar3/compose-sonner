@@ -23,7 +23,21 @@ kotlin {
                 enabled = false
             }
         }
-        binaries.executable()
+        binaries.library()
+    }
+    js(IR) {
+        moduleName = "compose-sooner-jscanvas"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "compose-sooner-jscanvas.js"
+            }
+
+            testTask {
+                // Tests are broken now: Module not found: Error: Can't resolve './skiko.mjs'
+                enabled = false
+            }
+        }
+        binaries.library()
     }
 
     androidTarget {
