@@ -22,10 +22,10 @@ kotlin {
     }
 
     js(IR) {
-        moduleName = "composeApp"
+        moduleName = "composeApp-jscanvas"
         browser {
             commonWebpackConfig {
-                outputFileName = "composeApp.js"
+                outputFileName = "composeApp-jscanvas.js"
             }
         }
         binaries.executable()
