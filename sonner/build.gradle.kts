@@ -23,7 +23,7 @@ kotlin {
                 enabled = false
             }
         }
-        binaries.executable()
+        binaries.library()
     }
     js(IR) {
         moduleName = "compose-sooner-jscanvas"
@@ -37,7 +37,7 @@ kotlin {
                 enabled = false
             }
         }
-        binaries.executable()
+        binaries.library()
     }
 
     androidTarget {
