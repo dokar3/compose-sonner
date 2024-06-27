@@ -26,10 +26,10 @@ kotlin {
         binaries.executable()
     }
     js(IR) {
-        moduleName = "compose-sooner"
+        moduleName = "compose-sooner-jscanvas"
         browser {
             commonWebpackConfig {
-                outputFileName = "compose-sooner.js"
+                outputFileName = "compose-sooner-jscanvas.js"
             }
 
             testTask {
