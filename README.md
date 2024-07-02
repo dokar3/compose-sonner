@@ -128,7 +128,7 @@ toaster.dismissAll()
 // Enable close buttons
 Toaster(
     state = toaster,
-    closeButton = true,
+    showCloseButton = true,
 )
 
 // Set an action button
