@@ -4,7 +4,7 @@ android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.9.0"
-compose-plugin = "1.6.11"
+compose-plugin = "1.10.0"
 kotlin = "2.0.0"
 coroutines = "1.8.1"
 
