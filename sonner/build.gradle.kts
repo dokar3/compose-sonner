@@ -13,11 +13,11 @@ kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
         compilerOptions {
-            outputModuleName.set("compose-sooner")
+            outputModuleName.set("compose-sonner")
         }
         browser {
             commonWebpackConfig {
-                outputFileName = "compose-sooner.js"
+                outputFileName = "compose-sonner.js"
             }
 
             testTask {
@@ -29,11 +29,11 @@ kotlin {
     }
     js(IR) {
         compilerOptions {
-            outputModuleName.set("compose-sooner-jscanvas")
+            outputModuleName.set("compose-sonner-jscanvas")
         }
         browser {
             commonWebpackConfig {
-                outputFileName = "compose-sooner-jscanvas.js"
+                outputFileName = "compose-sonner-jscanvas.js"
             }
 
             testTask {
