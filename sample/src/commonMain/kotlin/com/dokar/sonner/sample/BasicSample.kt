@@ -127,8 +127,6 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
 
             Text("Options")
 
-            ButtonDefaults
-
             Spacer(modifier = Modifier.height(8.dp))
 
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
