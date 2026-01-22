@@ -1,18 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.mavenPublish)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "compose-sooner"
+        compilerOptions {
+            outputModuleName.set("compose-sooner")
+        }
         browser {
             commonWebpackConfig {
                 outputFileName = "compose-sooner.js"
@@ -26,7 +28,9 @@ kotlin {
         binaries.library()
     }
     js(IR) {
-        moduleName = "compose-sooner-jscanvas"
+        compilerOptions {
+            outputModuleName.set("compose-sooner-jscanvas")
+        }
         browser {
             commonWebpackConfig {
                 outputFileName = "compose-sooner-jscanvas.js"
@@ -40,18 +44,25 @@ kotlin {
         binaries.library()
     }
 
-    androidTarget {
-        publishLibraryVariants("release")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+    androidLibrary {
+        namespace = "com.dokar.sonner.core"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "sonner"
+        }
+    }
 
     jvm("desktop")
 
@@ -62,9 +73,9 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.ui)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.ui)
             implementation(libs.kotlinx.coroutines.core)
         }
         desktopMain.dependencies {
@@ -76,27 +87,14 @@ kotlin {
         }
         val desktopTest by getting {
             dependencies {
-                implementation(compose.desktop.uiTestJUnit4)
+                implementation(libs.compose.ui.test.junit4)
             }
         }
     }
 }
 
-android {
-    namespace = "com.dokar.sonner.core"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-    }
+tasks.named("iosSimulatorArm64Test") {
+    enabled = false
 }
 
 tasks

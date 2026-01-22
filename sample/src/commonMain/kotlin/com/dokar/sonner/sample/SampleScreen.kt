@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -48,11 +49,9 @@ fun SampleScreen(modifier: Modifier = Modifier) {
     var titleHeight by remember { mutableIntStateOf(0) }
 
     MaterialTheme {
-        Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = modifier.fillMaxSize()) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onSizeChanged { titleHeight = it.height },
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
                     modifier = Modifier
@@ -104,10 +103,7 @@ fun SampleScreen(modifier: Modifier = Modifier) {
                 }
             }
 
-            val density = LocalDensity.current
-            Column {
-                Spacer(modifier = Modifier.height(with(density) { titleHeight.toDp() }))
-
+            Box(modifier = Modifier.weight(1f)) {
                 when (sampleType) {
                     SampleType.Basic -> BasicSample()
                     SampleType.Advanced -> AdvancedSample()
