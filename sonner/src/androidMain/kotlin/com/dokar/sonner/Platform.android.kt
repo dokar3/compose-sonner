@@ -1,9 +1,6 @@
 package com.dokar.sonner
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +18,13 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 
 internal actual fun currentNanoTime(): Long = System.nanoTime()
 
@@ -44,7 +41,10 @@ internal actual fun ToasterPopup(
 ) {
     val backView = LocalView.current
 
-    Popup(alignment = alignment) {
+    Popup(
+        alignment = alignment,
+        properties = PopupProperties(excludeFromSystemGesture = false),
+    ) {
         val innerView = LocalView.current
 
         var contentBounds by remember { mutableStateOf(Rect.Zero) }
