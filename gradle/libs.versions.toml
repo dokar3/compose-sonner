@@ -6,7 +6,7 @@ android-targetSdk = "36"
 androidx-activityCompose = "1.12.4"
 compose-plugin = "1.10.1"
 kotlin = "2.3.10"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
