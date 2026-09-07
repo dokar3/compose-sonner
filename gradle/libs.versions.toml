@@ -5,7 +5,7 @@ android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activityCompose = "1.13.0"
 compose-plugin = "1.11.1"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 coroutines = "1.11.0"
 
 [libraries]
