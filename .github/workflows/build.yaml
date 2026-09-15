@@ -16,7 +16,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '17.0.20+101'
           distribution: 'adopt'
           cache: gradle
 
