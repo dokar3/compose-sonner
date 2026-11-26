@@ -8,14 +8,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -50,9 +51,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.Popup
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlin.math.max
+import kotlinx.coroutines.launch
 
 /**
  * The toaster, within a [Popup]. It will display toasts from the toaster [state].
@@ -61,7 +63,8 @@ import kotlin.math.max
  * @param modifier The modifier to be applied to the container.
  * @param maxVisibleToasts Maximum number of toasts visible at the same time.
  * @param expanded Whether toasts are expanded vertically instead of stacked.
- * @param swipeable Whether toasts can be dismissed with a swipe down gesture.
+ * @param swipeable Whether toasts can be dismissed with a swipe gesture.
+ * @param swipeDirections Allowed swipe directions to dismiss toasts when [swipeable] is `true`.
  * @param richColors Whether to use rich colors for toasts that have a different type than [ToastType.Normal].
  * @param darkTheme Whether toasts are in dark theme.
  * @param showCloseButton Whether to show a close button on the top-left corner for each toast.
@@ -124,6 +127,7 @@ fun Toaster(
     enterTransitionDuration: Int = ToasterDefaults.ENTER_TRANSITION_DURATION,
     exitTransitionDuration: Int = ToasterDefaults.EXIT_TRANSITION_DURATION,
     dismissPause: ToastDismissPause = ToastDismissPause.OnInvisible,
+    swipeDirections: ToastSwipeDirections = ToastSwipeDirections.Down,
     iconSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.iconSlot(it) },
     messageSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.messageSlot(it) },
     actionSlot: @Composable (toast: Toast) -> Unit = { ToasterDefaults.actionSlot(it) },
@@ -222,7 +226,11 @@ fun Toaster(
                         dismissing = item.isDismissing,
                         maxVisibleToasts = maxVisibleToasts,
                         widthPolicy = widthPolicy(toast),
-                        swipeable = swipeable,
+                        swipeDirections = if (swipeable) {
+                            swipeDirections
+                        } else {
+                            ToastSwipeDirections.None
+                        },
                         elevation = elevation,
                         shadowAmbientColor = shadowAmbientColor,
                         shadowSpotColor = shadowSpotColor,
@@ -321,7 +329,7 @@ private fun ToastItem(
     dismissing: Boolean,
     maxVisibleToasts: Int,
     widthPolicy: ToastWidthPolicy,
-    swipeable: Boolean,
+    swipeDirections: ToastSwipeDirections,
     elevation: Dp,
     shadowAmbientColor: Color,
     shadowSpotColor: Color,
@@ -344,23 +352,42 @@ private fun ToastItem(
         MutableTransitionState(false).also { it.targetState = true }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     var frontItemHeight by remember { mutableIntStateOf(itemHeightProvider.get(0)) }
 
+    var width by remember { mutableIntStateOf(0) }
     var height by remember { mutableIntStateOf(0) }
 
+    var dragX by remember { mutableFloatStateOf(0f) }
     var dragY by remember { mutableFloatStateOf(0f) }
+    var resetJob by remember { mutableStateOf<Job?>(null) }
+    var dismissedSwipeDirection by remember { mutableStateOf(ToastSwipeDirections.None) }
 
     val isBottomAlign = alignment.isBottomAlign()
 
-    val draggableState = rememberDraggableState(
-        onDelta = { delta -> dragY = max(0f, dragY + delta) }
-    )
-
-    fun isSwipedToDismiss(velocity: Float): Boolean {
-        if (velocity > 600f && dragY >= height / 5f) return true
-        if (velocity > 300f && dragY >= height / 3f) return true
-        if (velocity > 100f && dragY >= height / 2f) return true
-        return dragY > height * 0.8f
+    fun animateDragReset() {
+        resetJob?.cancel()
+        resetJob = coroutineScope.launch {
+            if (dragX != 0f) {
+                animate(
+                    initialValue = dragX,
+                    targetValue = 0f,
+                    animationSpec = tween(durationMillis = exitTransitionDuration),
+                ) { value, _ ->
+                    dragX = value
+                }
+            }
+            if (dragY != 0f) {
+                animate(
+                    initialValue = dragY,
+                    targetValue = 0f,
+                    animationSpec = tween(durationMillis = exitTransitionDuration),
+                ) { value, _ ->
+                    dragY = value
+                }
+            }
+        }
     }
 
     val scale = animateFloatAsState(
@@ -384,6 +411,11 @@ private fun ToastItem(
     LaunchedEffect(visibleState, dismissing) {
         if (dismissing) {
             visibleState.targetState = false
+        } else {
+            resetJob?.cancel()
+            dragX = 0f
+            dragY = 0f
+            dismissedSwipeDirection = ToastSwipeDirections.None
         }
     }
 
@@ -401,21 +433,51 @@ private fun ToastItem(
             .collect { frontItemHeight = it }
     }
 
+    val exitTransition = when (dismissedSwipeDirection) {
+        ToastSwipeDirections.Left -> {
+            slideOutHorizontally(tween(durationMillis = exitTransitionDuration)) { -it } +
+                fadeOut(tween(durationMillis = exitTransitionDuration))
+        }
+
+        ToastSwipeDirections.Right -> {
+            slideOutHorizontally(tween(durationMillis = exitTransitionDuration)) { it } +
+                fadeOut(tween(durationMillis = exitTransitionDuration))
+        }
+
+        ToastSwipeDirections.Up -> {
+            slideOutVertically(tween(durationMillis = exitTransitionDuration)) { -it } +
+                fadeOut(tween(durationMillis = exitTransitionDuration))
+        }
+
+        ToastSwipeDirections.Down -> {
+            slideOutVertically(tween(durationMillis = exitTransitionDuration)) { it } +
+                fadeOut(tween(durationMillis = exitTransitionDuration))
+        }
+
+        else -> {
+            slideOutVertically(tween(durationMillis = exitTransitionDuration)) {
+                if (isBottomAlign) it else -it
+            } + fadeOut(tween(durationMillis = exitTransitionDuration))
+        }
+    }
+
     AnimatedVisibility(
         visibleState = visibleState,
         enter = slideInVertically(tween(durationMillis = enterTransitionDuration)) {
             if (isBottomAlign) it else -it
         } + fadeIn(tween(durationMillis = enterTransitionDuration)),
-        exit = slideOutVertically(tween(durationMillis = exitTransitionDuration)) {
-            if (isBottomAlign) it else -it
-        } + fadeOut(tween(durationMillis = exitTransitionDuration)),
+        exit = exitTransition,
         modifier = modifier
-            .onSizeChanged { height = it.height }
+            .onSizeChanged {
+                width = it.width
+                height = it.height
+            }
             .graphicsLayer {
                 this.alpha = alpha.value
                 transformOrigin = TransformOrigin(0.5f, if (isBottomAlign) 0f else 1f)
                 scaleX = scale.value
                 scaleY = scale.value
+                translationX = dragX
                 translationY = tranY.value + dragY
             }
             .clickable(
@@ -423,23 +485,40 @@ private fun ToastItem(
                 indication = null,
                 onClick = {},
             )
-            .draggable(
-                state = draggableState,
-                enabled = swipeable,
-                orientation = Orientation.Vertical,
-                onDragStarted = { dragY = 0f },
-                onDragStopped = { velocity ->
-                    if (!isSwipedToDismiss(velocity)) {
-                        animate(
-                            targetValue = 0f,
-                            initialValue = dragY,
-                            animationSpec = tween(durationMillis = exitTransitionDuration),
-                        ) { value, _ ->
-                            dragY = value
+            .toastSwipeToDismiss(
+                swipeDirections = swipeDirections,
+                onDragStart = {
+                    resetJob?.cancel()
+                },
+                onDrag = { orientation, delta ->
+                    when (orientation) {
+                        Orientation.Horizontal -> {
+                            dragX = clampDragOffset(dragX, delta, orientation, swipeDirections)
                         }
-                    } else {
-                        onRequestDismiss()
+
+                        Orientation.Vertical -> {
+                            dragY = clampDragOffset(dragY, delta, orientation, swipeDirections)
+                        }
                     }
+                },
+                onDragEnd = { orientation, velocity ->
+                    val dismissDirection = resolveDismissDirection(
+                        orientation = orientation,
+                        dragOffset = if (orientation == Orientation.Horizontal) dragX else dragY,
+                        velocity = velocity,
+                        width = width,
+                        height = height,
+                        swipeDirections = swipeDirections,
+                    )
+                    if (!dismissDirection.isEmpty) {
+                        dismissedSwipeDirection = dismissDirection
+                        onRequestDismiss()
+                    } else {
+                        animateDragReset()
+                    }
+                },
+                onDragCancel = {
+                    animateDragReset()
                 },
             ),
     ) {

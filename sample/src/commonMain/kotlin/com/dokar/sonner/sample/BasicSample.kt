@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dokar.sonner.TextToastAction
 import com.dokar.sonner.ToastDismissPause
+import com.dokar.sonner.ToastSwipeDirections
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
@@ -61,6 +63,10 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
     var dismissPause by remember { mutableStateOf(ToastDismissPause.Never) }
 
     var alignment by remember { mutableStateOf(Alignment.BottomCenter) }
+
+    var swipeDirections by remember {
+        mutableStateOf(ToastSwipeDirections.Down)
+    }
 
     var maxVisibleToasts by remember { mutableIntStateOf(3) }
 
@@ -305,6 +311,47 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
 
             Spacer(Modifier.height(16.dp))
 
+            Text("Swipe directions")
+
+            Spacer(Modifier.height(8.dp))
+
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val options = remember {
+                    listOf(
+                        "Up" to ToastSwipeDirections.Up,
+                        "Down" to ToastSwipeDirections.Down,
+                        "Left" to ToastSwipeDirections.Left,
+                        "Right" to ToastSwipeDirections.Right,
+                    )
+                }
+                for ((label, direction) in options) {
+                    val checked = direction in swipeDirections
+                    val toggle = {
+                        swipeDirections = if (checked) {
+                            swipeDirections - direction
+                        } else {
+                            swipeDirections + direction
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = toggle,
+                        ),
+                    ) {
+                        Checkbox(
+                            checked = checked,
+                            onCheckedChange = { toggle() },
+                        )
+                        Text(label)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
             Text("Max visible toasts")
 
             Spacer(Modifier.height(8.dp))
@@ -342,5 +389,6 @@ internal fun BasicSample(modifier: Modifier = Modifier) {
         showCloseButton = closeButton,
         alignment = alignment,
         dismissPause = dismissPause,
+        swipeDirections = swipeDirections,
     )
 }

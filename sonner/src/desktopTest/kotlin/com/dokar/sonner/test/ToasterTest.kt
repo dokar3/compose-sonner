@@ -2,6 +2,7 @@ package com.dokar.sonner.test
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,8 +12,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.dp
 import com.dokar.sonner.TextToastAction
+import com.dokar.sonner.ToastSwipeDirections
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.ToasterState
@@ -171,5 +176,112 @@ class ToasterTest {
             swipeDown(startY = top, endY = bottom)
         }
         composeTestRule.onNodeWithTag("Toaster").assertDoesNotExist()
+    }
+
+    @Test
+    fun swipeUpToDismiss() = runTest {
+        val toaster = ToasterState(coroutineScope = this)
+        composeTestRule.setContent {
+            Box(modifier = Modifier.size(500.dp)) {
+                Toaster(
+                    state = toaster,
+                    swipeDirections = ToastSwipeDirections.Up,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
+            }
+        }
+
+        toaster.show("Hello")
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeUp(startY = bottom, endY = top)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertDoesNotExist()
+    }
+
+    @Test
+    fun swipeLeftAndRightToDismiss() = runTest {
+        val toaster = ToasterState(coroutineScope = this)
+        composeTestRule.setContent {
+            Box(modifier = Modifier.size(500.dp)) {
+                Toaster(
+                    state = toaster,
+                    swipeDirections = ToastSwipeDirections.Horizontal,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
+            }
+        }
+
+        toaster.show("Swipe Left")
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeLeft(startX = right, endX = left)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertDoesNotExist()
+
+        toaster.show("Swipe Right")
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeRight(startX = left, endX = right)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertDoesNotExist()
+    }
+
+    @Test
+    fun swipeInDisabledDirectionDoesNotDismiss() = runTest {
+        val toaster = ToasterState(coroutineScope = this)
+        composeTestRule.setContent {
+            Box(modifier = Modifier.size(500.dp)) {
+                Toaster(
+                    state = toaster,
+                    swipeDirections = ToastSwipeDirections.Down + ToastSwipeDirections.Right,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
+            }
+        }
+
+        toaster.show("Hello")
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeUp(startY = bottom, endY = top)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeLeft(startX = right, endX = left)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeRight(startX = left, endX = right)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertDoesNotExist()
+    }
+
+    @Test
+    fun swipeDisabledDoesNotDismiss() = runTest {
+        val toaster = ToasterState(coroutineScope = this)
+        composeTestRule.setContent {
+            Box(modifier = Modifier.size(500.dp)) {
+                Toaster(
+                    state = toaster,
+                    swipeable = false,
+                    swipeDirections = ToastSwipeDirections.All,
+                    enterTransitionDuration = 0,
+                    exitTransitionDuration = 0,
+                )
+            }
+        }
+
+        toaster.show("Hello")
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("Toaster").performTouchInput {
+            swipeDown(startY = top, endY = bottom)
+        }
+        composeTestRule.onNodeWithTag("Toaster").assertIsDisplayed()
     }
 }
