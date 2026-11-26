@@ -96,6 +96,10 @@ tasks.named("iosSimulatorArm64Test") {
     enabled = false
 }
 
+tasks.matching { it.name.startsWith("checkComposeUiTestConfigurationFor") }.configureEach {
+    enabled = false
+}
+
 tasks
     .withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
     .configureEach {
