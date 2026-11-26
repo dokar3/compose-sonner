@@ -52,10 +52,12 @@ class ToastSwipeDirectionsTest {
             Orientation.Vertical,
             resolveSwipeOrientation(100f, 1f, ToastSwipeDirections.Down),
         )
+        assertNull(resolveSwipeOrientation(100f, -1f, ToastSwipeDirections.Down))
         assertEquals(
             Orientation.Horizontal,
-            resolveSwipeOrientation(1f, 100f, ToastSwipeDirections.Left),
+            resolveSwipeOrientation(-1f, 100f, ToastSwipeDirections.Left),
         )
+        assertNull(resolveSwipeOrientation(1f, 100f, ToastSwipeDirections.Left))
 
         val downAndRight = ToastSwipeDirections.Down + ToastSwipeDirections.Right
         assertEquals(
@@ -71,6 +73,9 @@ class ToastSwipeDirectionsTest {
             Orientation.Vertical,
             resolveSwipeOrientation(-20f, 10f, downAndRight),
         )
+        // Neither left nor up is enabled -> returns null so event is not consumed
+        assertNull(resolveSwipeOrientation(-20f, 0f, downAndRight))
+        assertNull(resolveSwipeOrientation(-20f, -10f, downAndRight))
     }
 
     @Test
