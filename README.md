@@ -27,7 +27,7 @@ https://github.com/dokar3/compose-sonner/assets/68095777/ff97c6cc-012e-4152-8c40
     - Different types and rich colors
     - Transitions
     - Positions (Alignments)
-    - Swipe down to dismiss
+    - Swipe to dismiss in any direction
     - Close button and action button
     - Custom icons
     - Durations
@@ -164,6 +164,15 @@ Toaster(
 Toaster(
     state = toaster,
     dismissPause = ToastDismissPause.[Never | OnNotFront | OnInvisible],
+)
+```
+
+### Swipe directions
+
+```kotlin
+Toaster(
+    state = toaster,
+    swipeDirections = ToastSwipeDirections.Down + ToastSwipeDirections.Horizontal,
 )
 ```
 
